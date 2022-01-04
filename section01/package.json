@@ -1,0 +1,17 @@
+{
+  "name": "section01",
+  "version": "1.0.0",
+  "description": "first week's lesson of NodeJS",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "author": "Mtunzi Steven Mavuma",
+  "license": "ISC"
+}
