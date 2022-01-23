@@ -13,13 +13,14 @@ const router = express.Router();
 // / => GET
 router.get('/', productController.getIndex);
 
-// /shop/products => GET
+// /products => GET
 router.get('/products', productController.getProducts);
 
-// /shop/products/:productId => GET
-router.get('/products/:productId', productController.getProduct);
+// /products/:productId => GET
+router.get('/products/:productId', productController.getProduct); 
+//This is a special route that handles dynamic routes with variable productId
 
-// /shop/cart => GET
+// /cart => GET
 router.get('/cart', productController.getCart);
 
 // /shop/cart => POST
@@ -28,10 +29,10 @@ router.post('/cart', productController.postCart);
 // /shop/delete-cart-product => POST
 router.post('/delete-cart-product', productController.postDeleteCart);
 
-// /shop/checkout => GET
+// /checkout => GET
 router.get('/checkout', productController.getCheckout);
 
-// /shop/orders => GET
+// /orders => GET
 router.get('/orders', productController.getOrders);
 
 
