@@ -3,10 +3,16 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors')  // import Heroku options manager 
+require('dotenv').config(); // import config values
 
 const errorController = require('./controllers/errors');
 
 const app = express();
+
+const MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI; // connection url for the db
+
+const PORT = process.env.PORT || 3000; // listening prot for the server
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -33,9 +39,25 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+const corsOptions = {
+    origin: "https://rocky-tor-41343.herokuapp.com",
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+const options = {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    // useCreateIndex: true,
+    // useFindAndModify: false, 
+    family: 4
+};
+
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
-  .connect('mongodb+srv://mtunzi:MongoDBJune2022.@firstcluster21.ik5m1.mongodb.net/shop?retryWrites=true&w=majority') //connected to shop db in firstcluster21 of db user mtunzi with specified password "MongoDBJune2021."
+  .connect(
+    MONGODB_URL, options
+  )
   .then(result => {
 
     User.findOne() // MOngoose fn finds user in users db
@@ -59,7 +81,7 @@ mongoose
     })
 
     // start server at localhost:3000
-    app.listen(3000);
+    app.listen(PORT);
   })
   .catch(err => {
     console.log(err);
