@@ -107,6 +107,7 @@ exports.getSignup = (req, res, next) => {
             return user.save(); // save user to mongodb
         })
         .then(result =>{
+            console.log(email);
             res.redirect('/login');
             return transporter.sendMail({
                 to: email,
