@@ -8,7 +8,8 @@ exports.getProducts = (req, res, next) => {
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
-        path: '/products'
+        path: '/products',
+
       });
     })
     .catch(err => {
@@ -23,19 +24,21 @@ exports.getProduct = (req, res, next) => {
       res.render('shop/product-detail', {
         product: product,
         pageTitle: product.title,
-        path: '/products'
+        path: '/products',
+
       });
     })
     .catch(err => console.log(err))
   };
 
 exports.getIndex = (req, res, next) => {
-    Product.find() // mongoose function
+      Product.find() // mongoose function
     .then(products => {
       res.render('shop/index', {
         prods: products,
         pageTitle: 'Shop',
-        path: '/'
+        path: '/',
+
       });
     })
     .catch(err => {
@@ -52,7 +55,8 @@ exports.getCart = (req, res, next) => {
       res.render('shop/cart', {
         path: '/cart',
         pageTitle: 'Your Cart',
-        products: products
+        products: products,
+
       });
     })
     .catch(err => console.log(err));
@@ -65,7 +69,6 @@ exports.postCart = (req, res, next) => {
     return req.user.addToCart(product);
   })
   .then(result=>{
-    console.log(result);
     res.redirect('/cart');
   });
 };
@@ -87,13 +90,13 @@ exports.postOrder = (req, res, next) => {
       const products = user.cart.items.map(i => {
 
         // must map this to get products in object format below
-        // {...i.product._doc} will give the document for the respective id (product hold mongodb id)
+        // {...i.product._doc} will give the document for the respective id (products hold mongodb id)
         return {quantity: i.quantity, product: {...i.product._doc}};
 
       });
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user
         },
         products: products
@@ -112,12 +115,14 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
+
   Order.find({'user.userId': req.user._id})
     .then(orders => {
       res.render('shop/orders', {
         path: '/orders',
         pageTitle: 'Your Orders',
-        orders: orders
+        orders: orders,
+
       });
     })
     .catch(err => console.log(err));

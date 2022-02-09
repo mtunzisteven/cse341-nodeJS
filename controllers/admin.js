@@ -1,10 +1,16 @@
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
+
+  if(!req.session.isLoggedIn){ // send user to login if not logged in
+    return res.redirect('/login');
+  }
+
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false
+    editing: false,
+
   });
 };
 
@@ -18,7 +24,8 @@ exports.postAddProduct = (req, res, next) => {
     price: price, 
     description: description, 
     imgUrl: imgUrl, 
-    userId: req.user // mongoose will pick out the id even though we added all user data
+    userId: req.user, // mongoose will pick out the id even though we added all user data
+
   });
   
   product
@@ -34,6 +41,8 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
+
+
   const editMode = req.query.edit;
   if (!editMode) {
     return res.redirect('/');
@@ -48,7 +57,8 @@ exports.getEditProduct = (req, res, next) => {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
         editing: editMode,
-        product: product
+        product: product,
+
       });
     })
     .catch(err => console.log(err));
@@ -83,28 +93,31 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    //------------------------------------*
-    //          .populate()
-    //
-    // if we follow Product.find() with .populate('userId') we would get all fields of user under userId even though only user id was provided to id
-    // passing a 2nd arg allows us to choose with user info to get: .populate('userId', 'name')
-    //------------------------------------------------------------------------------------------------------------------------------------------|
-    //------------------------------------*
-    //          .select()
-    //
-    // if we follow Product.find() with .select('title price') we would get title and price form the db
-    // we can even exclude some data from being retrieved using minus: .selecte('title price -_id') | _id always returned if not excluded
 
-    Product.find() // mongoose function returns products from db
-    .then(products => {
-        console.log(products);
-        res.render('admin/products', {
-            prods: products,
-            pageTitle: 'Admin Products',
-            path: '/admin/products'
-        });
-    })
-    .catch(err => console.log(err));
+
+  //------------------------------------*
+  //          .populate()
+  //
+  // if we follow Product.find() with .populate('userId') we would get all fields of user under userId even though only user id was provided to id
+  // passing a 2nd arg allows us to choose which user info to get: .populate('userId', 'name')
+  //------------------------------------------------------------------------------------------------------------------------------------------|
+  //------------------------------------*
+  //          .select()
+  //
+  // if we follow Product.find() with .select('title price') we would get title and price form the db
+  // we can even exclude some data from being retrieved using minus: .selecte('title price -_id') | _id always returned if not excluded
+
+  Product.find() // mongoose function returns products from db
+  .then(products => {
+      res.render('admin/products', {
+          prods: products,
+          pageTitle: 'Admin Products',
+          path: '/admin/products',
+          
+
+      });
+  })
+  .catch(err => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
