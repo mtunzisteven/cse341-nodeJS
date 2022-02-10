@@ -14,6 +14,8 @@ const errorController = require('./controllers/errors');
 // MongoDB URL
 const MONGODB_URL = process.env.MONGODB_URI;
 
+console.log(MONGODB_URL);
+
 // server port           
 const PORT = process.env.PORT || 3000;
 
