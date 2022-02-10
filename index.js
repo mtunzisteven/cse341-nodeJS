@@ -92,9 +92,24 @@ app.use(authRoutes);
 // error controller has no route, so is used directly from controller
 app.use(errorController.get404); 
 
+const corsOptions = {
+  origin: "https://rocky-tor-41343.herokuapp.com/",
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+const options = {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  // useCreateIndex: true,
+  // useFindAndModify: false, 
+  family: 4
+};
+
+
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
-  .connect(MONGODB_URL) //connected to shop db in firstcluster21 of db user mtunzi with specified password.
+  .connect(MONGODB_URL, options) //connected to shop db in firstcluster21 of db user mtunzi with specified password.
   .then(result => {
     // start server at localhost:3000
     app.listen(PORT);
