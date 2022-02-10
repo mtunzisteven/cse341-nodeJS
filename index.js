@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');  // import Heroku options manager
 const session = require('express-session');
 const sessionDBStorage = require('connect-mongodb-session')(session); // session constant passed to a function stored in sessionDBstorage
 const csrf = require('csurf'); // import csrf token manager 
@@ -88,7 +89,7 @@ app.use((req, res, next) => {
 
 // get routes into scope for use in app
 app.use('/admin', adminRoutes);
-app.use(shopRoutes);
+app.use(shopRoutes); 
 app.use(authRoutes);
 
 // error controller has no route, so is used directly from controller
