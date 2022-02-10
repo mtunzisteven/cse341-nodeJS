@@ -13,7 +13,7 @@ require('dotenv').config(); // import config values
 const errorController = require('./controllers/errors');
 
 // MongoDB URL
-const MONGODB_URL = process.env.MONGODB_URI;
+const MONGODB_URL = process.env.MONGODB_URL; 
 
 console.log(MONGODB_URL);
 
