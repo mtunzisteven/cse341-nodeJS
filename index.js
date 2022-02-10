@@ -109,7 +109,10 @@ const options = {
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
-  .connect(MONGODB_URL, options) //connected to shop db in firstcluster21 of db user mtunzi with specified password.
+  .connect(
+    MONGODB_URL, 
+    options
+    ) //connected to shop db in firstcluster21 of db user mtunzi with specified password.
   .then(result => {
     // start server at localhost:3000
     app.listen(PORT);
