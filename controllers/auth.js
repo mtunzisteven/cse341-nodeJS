@@ -8,7 +8,7 @@ require('dotenv').config(); // import config values
 const User = require('../models/user');
 
 // url for reset password
-const PASSWORD_RESET_URL = process.env.PASSWORD_RESET_URL || 'http://localhost:3000';
+const APP_URL = process.env.PASSWORD_RESET_URL || 'http://localhost:3000';
 
 const transporter = nodemailer.createTransport(sendgrindTransport({
     auth: {
@@ -185,7 +185,7 @@ exports.postReset = (req, res, next) => {
                 req.flash('loginMsg', 'A reset message has been sent out to your email. The reset link will expire in 1 hour.');  // create flash message for login error
 
                 // log email message to test reset ability
-                console.log(`Hello. You requested a password reset. Please click on this: ${PASSWORD_RESET_URL}/reset/${token}`);
+                console.log(`Hello. You requested a password reset. Please click on this: ${APP_URL}/reset/${token}`);
 
                 res.redirect('/login');
 
@@ -194,7 +194,7 @@ exports.postReset = (req, res, next) => {
                     to: email,
                     from: 'mav19004@byui.edu',
                     subject: 'Password Reset!',
-                    html: `<p>Hello. You requested a password reset. Please click on this <a href=${PASSWORD_RESET_URL}/reset/${token}'>link</a> to reset your password.</p>`
+                    html: `<p>Hello. You requested a password reset. Please click on this <a href=${APP_URL}/reset/${token}'>link</a> to reset your password.</p>`
                 })
             })
             .catch(err => {
