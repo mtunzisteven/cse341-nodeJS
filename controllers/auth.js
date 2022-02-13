@@ -168,7 +168,7 @@ exports.postReset = (req, res, next) => {
         const token = buffer.toString('hex'); // buffer returns hex values. toString arg allows it to work with hex to ASCII chars
         User.findOne({email: email})
             .then(user => {
-
+                
                 // if email doesn't exist, load error mssage and redirect to reset page
                 if(!user){ 
                     req.flash('resetError', 'No account with the supplied email was found');
@@ -183,11 +183,11 @@ exports.postReset = (req, res, next) => {
             .then(result => {
 
                 req.flash('loginMsg', 'A reset message has been sent out to your email. The reset link will expire in 1 hour.');  // create flash message for login error
+                res.redirect('/login');
 
                 // log email message to test reset ability
                 console.log(`Hello. You requested a password reset. Please click on this: ${APP_URL}/reset/${token}`);
 
-                res.redirect('/login');
 
                 // Create email  
                 return transporter.sendMail({
@@ -219,7 +219,7 @@ exports.getNewPassword = (req, res, next) => {
             errorMessage: errorMessage, // send flash message for reset error to ../views/auth/reset.ejs page for display in div
             isAuthenticated: false,
             userId: user._id.toString(),
-            passwordToken: token
+            passwordToken: token // passing this for the hidden input that receives it
         });
     })
     .catch(err => {
