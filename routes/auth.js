@@ -35,8 +35,6 @@ router.post(
                 .then(user => {
                     if(!user){
 
-                        console.log('User: '+user);
-
                         return Promise.reject("Invalid email or password...");
 
                     }else{
@@ -45,8 +43,6 @@ router.post(
                                 .compare(req.body.password, user.password) // compare entered password with mongodb user password using bcrypt
                                 .then(passwordsMatch => {
                         
-                                    console.log(passwordsMatch);
-
                                     if(passwordsMatch){
 
                                         req.session.isLoggedIn = true; // stores isLoggedIn session variable in mongo db
@@ -55,8 +51,6 @@ router.post(
                                         return true;  // if no error, true returned otherwise we'd still end up with error
 
                                     }else{
-
-                                        console.log(passwordsMatch+' | db pw: '+user.password+' | entered pw:'+req.body.password);
 
                                         return Promise.reject("Invalid email or password!");
 

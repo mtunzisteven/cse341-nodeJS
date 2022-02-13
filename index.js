@@ -15,7 +15,8 @@ const errorController = require('./controllers/errors');
 // MongoDB URL
 const MONGODB_URL = process.env.MONGODB_URL; 
 
-console.log(MONGODB_URL);
+// used in password reset link
+const APP_URL = process.env.PASSWORD_RESET_URL || 'http://localhost:3000';
 
 // server port           
 const PORT = process.env.PORT || 3000;
@@ -96,7 +97,7 @@ app.use(authRoutes);
 app.use(errorController.get404); 
 
 const corsOptions = {
-  origin: "https://rocky-tor-41343.herokuapp.com/",
+  origin: APP_URL,
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));

@@ -98,8 +98,6 @@ exports.postSignup = (req, res, next) => {
     const password = req.body.password;
     let errors = validationResult(req); // get all erros stored by check in this request
 
-    console.log(errors.array())
-
     if(!errors.isEmpty()){
         return res.status(422)
         .render('auth/signup', {
@@ -128,7 +126,6 @@ exports.postSignup = (req, res, next) => {
             return user.save(); // save user to mongodb
         })
         .then(result =>{
-            console.log(email);
             res.redirect('/login');
             return transporter.sendMail({
                 to: email,
