@@ -23,6 +23,7 @@
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^3.1.1",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "csurf": "^1.11.0",
     "dotenv": "^14.3.2",
     "ejs": "^3.1.6",
@@ -32,7 +33,7 @@
     "mongodb": "^4.3.1",
     "mongoose": "^6.1.8",
     "nodemailer": "^6.7.2",
-    "nodemailer-sendgrid-transport": "^0.2.0", 
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^2.0.15"
   }
 }

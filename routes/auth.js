@@ -18,6 +18,13 @@ router.post(
     '/login', 
      
     [
+        body( // chaning a second validator for req.body object
+            'password', // req.body.password value being validated here
+            'Please make sure password is at least 8 characters long and includes letters and numbers' // error message displayed
+            )
+            .isLength({min: 8})
+            .isAlphanumeric()
+            .trim(), // remove white space
         check('email')
             .isEmail()
             .withMessage('Please enter a valid email')
@@ -28,7 +35,9 @@ router.post(
                 .then(user => {
                     if(!user){
 
-                        return Promise.reject("Invalid email or password.");
+                        console.log('User: '+user);
+
+                        return Promise.reject("Invalid email or password...");
 
                     }else{
 
@@ -36,6 +45,8 @@ router.post(
                                 .compare(req.body.password, user.password) // compare entered password with mongodb user password using bcrypt
                                 .then(passwordsMatch => {
                         
+                                    console.log(passwordsMatch);
+
                                     if(passwordsMatch){
 
                                         req.session.isLoggedIn = true; // stores isLoggedIn session variable in mongo db
@@ -45,7 +56,9 @@ router.post(
 
                                     }else{
 
-                                        return Promise.reject("Invalid email or password.");
+                                        console.log(passwordsMatch+' | db pw: '+user.password+' | entered pw:'+req.body.password);
+
+                                        return Promise.reject("Invalid email or password!");
 
                                     }
                                 });
@@ -54,14 +67,7 @@ router.post(
                 }) // promise returned if no email is fouind in the db matching the one entered.
 
             })
-            .normalizeEmail(), // make all letters lowercase
-        body( // chaning a second validator for req.body object
-            'password', // req.body.password value being validated here
-            'Please make sure password is at least 8 characters long and includes letters and numbers' // error message displayed
-            )
-            .isLength({min: 8})
-            .isAlphanumeric()
-            .trim() // remove white space
+            .normalizeEmail() // make all letters lowercase
     ],
     authController.postLogin
     );
@@ -122,13 +128,21 @@ router.get('/reset', authController.getReset);
 // /reset => POST
 router.post('/reset', authController.postReset);
 
-// /email=> GET
-router.get('/email', authController.getEmail);
-
 // /new-password => GET
 router.get('/reset/:token', authController.getNewPassword);
 
 // /new-password => POST
-router.post('/new-password', authController.postNewPassword);
+router.post(
+    '/new-password',    
+    [
+    body('password', // req.body.password value being validated here
+        'Please make sure password is at least 8 characters long and only includes letters and numbers' // error message displayed
+        )
+        .isLength({min: 8})
+        .isAlphanumeric()
+        .trim() // remove whitespace
+    ], 
+    authController.postNewPassword
+);
 
 module.exports = router;

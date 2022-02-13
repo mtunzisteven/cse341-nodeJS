@@ -1,11 +1,23 @@
 const crypto = require('crypto'); // import built-in Node JS secure random value generator
 const bcrypt = require('bcryptjs'); // csrf token generating package imported
 const {validationResult} = require('express-validator'); // import validationResult method of express validator sub package that stores all errors stored at 'check(property).isProperty'
+const nodemailer = require('nodemailer');
+const sendgrindTransport = require('nodemailer-sendgrid-transport');
+require('dotenv').config(); // import config values
 
 const User = require('../models/user');
 
+// url for reset password
+const PASSWORD_RESET_URL = process.env.PASSWORD_RESET_URL || 'http://localhost:3000';
+
+const transporter = nodemailer.createTransport(sendgrindTransport({
+    auth: {
+        api_key: process.env.KEY
+    }
+}));
+
 exports.getLogin = (req, res, next) => {
-    let errorMessage = req.flash('loginError');
+    let errorMessage = req.flash('loginMsg');
     if (errorMessage.length > 0) {
         errorMessage = errorMessage[0];
     } else {
@@ -25,11 +37,12 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const user = req.user;
     let errors = validationResult(req); // get all erros stored by check in this request
 
     // when errors are found, we'll redirect to login page and send error message from express validator
     if(!errors.isEmpty()){
+
+        req.session.isLoggedIn = false; // negate any false positive by password compair if password is wrong characters.
         return res.status(422)
         .render('auth/login', {
             path: '/login',
@@ -45,7 +58,7 @@ exports.postLogin = (req, res, next) => {
     return req.session.save(err => { // save() required to ensure the session data is saved to db before the redirect is carried out.
         
         if(err){
-            req.flash('loginError', 'Internal error, please try again.');  // create flash message for login error
+            req.flash('loginMsg', 'Internal error, please try again.');  // create flash message for login error
             console.log(err);
         }
         res.redirect('/'); // go to home page if passwords matched
@@ -115,6 +128,7 @@ exports.postSignup = (req, res, next) => {
             return user.save(); // save user to mongodb
         })
         .then(result =>{
+            console.log(email);
             res.redirect('/login');
             return transporter.sendMail({
                 to: email,
@@ -171,29 +185,24 @@ exports.postReset = (req, res, next) => {
             })
             .then(result => {
 
-                res.redirect('/message'); // redirect to message view and tell the user about reset link and about its expiry date.
+                req.flash('loginMsg', 'A reset message has been sent out to your email. The reset link will expire in 1 hour.');  // create flash message for login error
+
+                // log email message to test reset ability
+                console.log(`Hello. You requested a password reset. Please click on this: ${PASSWORD_RESET_URL}/reset/${token}`);
+
+                res.redirect('/login');
+
+                // Create email  
                 return transporter.sendMail({
                     to: email,
                     from: 'mav19004@byui.edu',
-                    subject: 'Signup Successful!',
-                    html: "<h1>You requested a password reset. Please click on this <a href='localhost:3000/reset/${token}'>link</a> to reset your password.</p>"
+                    subject: 'Password Reset!',
+                    html: `<p>Hello. You requested a password reset. Please click on this <a href=${PASSWORD_RESET_URL}/reset/${token}'>link</a> to reset your password.</p>`
                 })
-
             })
             .catch(err => {
-                console.log(err);
+                console.log(err); 
             });
-    });
-};
-
-// email simulation middleware
-exports.getEmail = (req, res, next) => {
-
-    res.render('auth/email', {
-      path: '/email',
-      pageTitle: 'Reset Password Email',
-      emailMessage: req.flash('emailMessage'), // send flash email message for password reset with token
-      isAuthenticated: false
     });
 };
 
@@ -210,7 +219,7 @@ exports.getNewPassword = (req, res, next) => {
         res.render('auth/new-password', {
             path: '/new-password',
             pageTitle: 'New Password',
-            errorMessage: errorMessage, // send flash message for signup error to ../views/auth/signup.ejs page for display in div
+            errorMessage: errorMessage, // send flash message for reset error to ../views/auth/reset.ejs page for display in div
             isAuthenticated: false,
             userId: user._id.toString(),
             passwordToken: token
@@ -222,10 +231,19 @@ exports.getNewPassword = (req, res, next) => {
   };
 
 exports.postNewPassword = (req, res, next) => {
+    let errors = validationResult(req);
     const newPassword = req.body.password;
     const userId = req.body.userId;
     const passwordToken = req.body.passwordToken;
     let resetUser;
+
+    if (!errors.isEmpty()) {
+
+        req.flash('newPasswordError', errors.array()[0].msg)
+
+        return res.redirect(`/reset/${passwordToken}`);
+
+    }
 
     User.findOne({ 
         resetToken: passwordToken, 
