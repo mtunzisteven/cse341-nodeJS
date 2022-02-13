@@ -120,7 +120,16 @@ router.post(
 router.get('/reset', authController.getReset);
 
 // /reset => POST
-router.post('/reset', authController.postReset);
+router.post(
+    '/reset', 
+    [
+        check('email')
+            .isEmail()
+            .normalizeEmail() // make all letters lowercase and remove special characters
+        // chaning a second validator for req.body object, authController.postReset);
+    ], 
+    authController.postReset
+);
 
 // /new-password => GET
 router.get('/reset/:token', authController.getNewPassword);
