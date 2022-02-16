@@ -86,8 +86,6 @@ app.use((req, res, next) => {
 
   if(res.locals.isAuthenticated){
     res.locals.admin = req.user.admin; // define the user level in order to reveal or hide admin functionalities
-
-    console.log(res.locals.admin);
   }
 
   res.locals.csrfToken = req.csrfToken(); // csrf token provided by csurf package allows only pages with valid token to use site
