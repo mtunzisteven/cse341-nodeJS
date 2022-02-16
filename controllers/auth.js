@@ -121,6 +121,7 @@ exports.postSignup = (req, res, next) => {
             const user = new User({ 
                 email: email,
                 password: hashedPassword, // password to supply to user is hashed
+                userLevel: 'customer',
                 cart: { items:[]}
             });
             return user.save(); // save user to mongodb

@@ -4,6 +4,8 @@ exports.getAddProduct = (req, res, next) => {
 
   if(!req.session.isLoggedIn){ // send user to login if not logged in
     return res.redirect('/login');
+  }else if(!res.locals.admin){
+    return res.redirect('/');
   }
 
   res.render('admin/edit-product', {
@@ -46,7 +48,10 @@ exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
   if (!editMode) {
     return res.redirect('/');
+  }else if(!res.locals.admin){
+    return res.redirect('/');
   }
+
   const prodId = req.params.productId;
     Product.findById(prodId) // Mongoose fn returns product by id from db
     .then(product => {
@@ -94,6 +99,9 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
 
+  if(!res.locals.admin){
+    return res.redirect('/');
+  }
 
   //------------------------------------*
   //          .populate()
