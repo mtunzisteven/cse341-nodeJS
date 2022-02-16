@@ -114,7 +114,8 @@ router.post(
         })
         .trim() // remove whitespace
     ], 
-    authController.postSignup);
+    authController.postSignup
+);
 
 // /reset => GET
 router.get('/reset', authController.getReset);
