@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400&family=Shizuru&display=swap');
+
+$main-color: rgb(3, 109, 3);
+$secondary-color: rgb(209, 178, 0);
+$dark-color: rgb(67, 67, 67);
+$darker-color: rgb(22, 22, 22);
+$light-color: rgb(209, 209, 209);
+$lighter-color: rgb(240, 240, 240);
+
+.product-form {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+    display: block;
+}
+
+.product-item {
+    width: 20rem;
+    max-width: 95%;
+    margin: 1rem;
+
+    & a{
+        text-decoration: none;
+        color:$dark-color;
+    }
+}
+
+.product-item:hover {
+    border: solid 1px $secondary-color;
+    box-shadow: 1px 2px 3px 1px $dark-color;
+}
+
+.product__title {
+    font-size: 1.6rem;
+    padding: 0;
+    margin: 5px auto -15px auto;
+    text-align: left;
+}
+
+.product__price {
+    text-align: left;
+    margin-bottom: 0.5rem;
+    padding-bottom: 10px;
+}
+
+.product__description {
+    text-align: left;
+}

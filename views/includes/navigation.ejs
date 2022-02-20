@@ -4,21 +4,14 @@
     <nav class="main-header__nav">
         <ul class="main-header__item-list">
             <li class="main-header__item">
-                <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
+                <a class="<%= path === '/' ? 'active' : '' %>" href="/">Home</a>
             </li>
             <li class="main-header__item">
-                <a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
+                <a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Shop</a>
             </li>
 
-            <% if(isAuthenticated){ %>
-
-                <li class="main-header__item">
-                    <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
-                </li>
-                <li class="main-header__item">
-                    <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
-                </li>
-                <% if(admin){ %>
+            <% if(isAuthenticated){ 
+                 if(admin){ %>
 
                     <li class="main-header__item">
                         <a class="<%= path === '/admin/add-product' ? 'active' : '' %>" href="/admin/add-product">Add Product
@@ -47,11 +40,25 @@
             <% }else{ %>
 
                 <li class="main-header__item">
-                    <form action="/logout" method="POST">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <button type="submit">Logout</button>
-                    </form>            
-                </li> 
+                    <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart"><i class="bi bi-cart"></i></a>
+                </li>
+                <li class="main-header__item">
+
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="/orders">Orders</a></li>
+                        <li class="main-header__item">
+                            <form action="/logout" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit">Logout</button>
+                            </form>            
+                        </li>                     
+                        </ul>
+                    </div>
+                </li>
 
             <% } %>
 

@@ -1,27 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400&family=Shizuru&display=swap");
 .product-form {
-    width: 20rem;
-    max-width: 90%;
-    margin: auto;
-    display: block;
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
 }
 
 .product-item {
-    width: 20rem;
-    max-width: 95%;
-    margin: 1rem;
+  width: 20rem;
+  max-width: 95%;
+  margin: 1rem;
+}
+
+.product-item a {
+  text-decoration: none;
+  color: #434343;
+}
+
+.product-item:hover {
+  border: solid 1px #d1b200;
+  -webkit-box-shadow: 1px 2px 3px 1px #434343;
+          box-shadow: 1px 2px 3px 1px #434343;
 }
 
 .product__title {
-    font-size: 1.2rem;
-    text-align: center;
+  font-size: 1.6rem;
+  padding: 0;
+  margin: 5px auto -15px auto;
+  text-align: left;
 }
 
 .product__price {
-    text-align: center;
-    color: #4d4d4d;
-    margin-bottom: 0.5rem;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  padding-bottom: 10px;
 }
 
 .product__description {
-    text-align: center;
+  text-align: left;
 }
+/*# sourceMappingURL=product.css.map */

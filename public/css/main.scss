@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@200&family=Redressed&display=swap');
+
+$main-color: rgb(3, 109, 3);
+$dark-main-color: rgb(2, 68, 2);
+$secondary-color: rgb(209, 178, 0);
+$dark-color: rgb(67, 67, 67);
+$darker-color: rgb(22, 22, 22);
+$light-color: rgb(209, 209, 209);
+$lighter-color: rgb(240, 240, 240);
+$alert-bd: rgb(252, 174, 174);
+$alert-color: rgb(167, 6, 6);
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+main {
+  padding: 1rem;
+  margin: auto;
+
+  & h1{ 
+      font-family: 'Redressed', cursive;
+    }
+}
+
+form {
+  display: inline;
+}
+
+.centered {
+  text-align: center;
+}
+
+.image {
+  height: 20rem;
+}
+
+.image img {
+  height: 100%;
+}
+
+.main-header {
+  width: 100%;
+  height: 3.5rem;
+  background-color: $main-color;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.main-header__nav {
+  display: none;
+}
+
+.main-header__item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.main-header__item {
+  margin: 0 1rem;
+  padding: 0;
+}
+
+.main-header__item button{
+  background-color: #ffffff;
+  color:  #000000;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15.5px;
+  border: none;
+  cursor: pointer;
+}
+
+.main-header__item a, .main-header__item button {
+  text-decoration: none;
+  color: $lighter-color;
+}
+
+.main-header__item .dropdown a, .main-header__item .dropdown button {
+    color: $dark-color;
+  }
+
+.main-header__item a:hover,
+.main-header__item a:active,
+.main-header__item a.active,
+.main-header__item button:hover
+ {
+  color: $secondary-color;
+
+}
+
+.mobile-nav {
+  width: 30rem;
+  height: 100vh;
+  max-width: 90%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: $lighter-color;
+  z-index: 10;
+  padding: 2rem 1rem 1rem 2rem;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+}
+
+.mobile-nav.open {
+  transform: translateX(0);
+}
+
+.mobile-nav__item-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-nav__item {
+  margin: 1rem;
+  padding: 0;
+}
+
+.mobile-nav__item a {
+  text-decoration: none;
+  color: dark-color;
+  font-size: 1.5rem;
+  padding: 0.5rem 2rem;
+}
+
+.mobile-nav__item a:active,
+.mobile-nav__item a:hover,
+.mobile-nav__item a.active {
+  background: $main-color;
+  color: $lighter-color;
+  border-radius: 3px;
+}
+
+#side-menu-toggle {
+  border: 1px solid $lighter-color;
+  font: inherit;
+  padding: 0.5rem;
+  display: block;
+  background: transparent;
+  color: $lighter-color;
+  cursor: pointer;
+}
+
+#side-menu-toggle:focus {
+  outline: none;
+}
+
+#side-menu-toggle:active,
+#side-menu-toggle:hover {
+  color: $secondary-color;
+  border-color: $secondary-color;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: $darker-color;
+  z-index: 5;
+  display: none;
+}
+
+.hero{
+    background-color: $secondary-color;
+    padding: 100px 0;
+    width: 100%;
+
+    & h1{
+
+        color: $lighter-color;
+        text-align: center;
+        font-size: 60px;
+    }
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: stretch;
+}
+
+.card {
+  box-shadow: 0 2px 8px $dark-color;
+}
+
+.card__header,
+.card__content {
+  padding: 1rem;
+}
+
+.card__header h1,
+.card__content h1,
+.card__content h2,
+.card__content p {
+  margin: 0;
+}
+
+.card__image {
+  width: 100%;
+}
+
+.card__image img {
+  width: 100%;
+}
+
+.card__actions {
+  padding: 1rem;
+  text-align: left;
+}
+
+.card__actions button,
+.card__actions a {
+  margin: 0 0.25rem 0 0;
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  text-decoration: none;
+  font: inherit;
+  border: none;
+  box-shadow: 1px 1px 5px 1px $dark-color;
+  color: $lighter-color;
+  background: $secondary-color;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  text-decoration: none;
+  font: inherit;
+  border: none;
+  box-shadow: 1px 1px 5px 1px $dark-color;
+  color: $lighter-color;
+  background: $secondary-color;
+  border-radius: 3px;
+  margin-left: 0;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:active {
+  background-color: $main-color;
+  color: $lighter-color;
+}
+
+.btn.danger {
+  color: $alert-color;
+  border-color: $alert-color;
+}
+
+.btn.danger:hover,
+.btn.danger:active {
+  background: $alert-color;
+  color: $lighter-color;
+}
+
+.flash-message{
+  text-align: center;
+  color: $alert-color;
+  background-color: $alert-bd;
+  border: solid 2px $alert-color;
+  padding: 5px 10px;
+  border-radius: 2px;
+  max-width: 350px;
+  margin: 15px auto;
+}
+
+div.footer-top-block{
+    text-align: center;
+    background-color: $dark-main-color;
+    padding: 10px 0;
+    color: $lighter-color;
+
+    & a{
+        color:inherit;
+        text-decoration: none;
+    }
+}
+
+footer.main-footer{
+    background-color: $main-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: $lighter-color;
+    padding: 5px 4%;
+
+    & p.years{
+        color: $lighter-color;
+    }
+
+    & ul{
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        & li{
+            color: inherit;
+        }
+    }
+
+    & a{
+        text-decoration: none;
+        color:inherit;
+        text-align: center;
+    }
+
+    .footer-bottom-block{
+        font-size: 12px;
+        text-align: center;
+        padding: 10px 0 6px 0;
+        border-top: 1px $light-color solid;
+    }
+}
+
+@media (min-width: 768px) {
+  .main-header__nav {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 2.6%;
+  }
+
+  #side-menu-toggle {
+    display: none;
+  }
+
+  .hero{
+    border-radius: 5px;
+    margin: 5px 4.5%;
+    max-width: 91%;
+
+    & h1{
+
+        color: $lighter-color;
+        text-align: center;
+        font-size: 60px;
+    }
+}
+}
