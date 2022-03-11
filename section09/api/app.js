@@ -2,9 +2,35 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose'); //db connection
+const multer = require('multer'); // file upload download package for non-Windows computers
+const { v4: uuidv4 } = require('uuid'); // file upload download package for Windows computers
+
 require('dotenv').config(); // import config values
 
 const app = express();
+
+// file upload/download middleware for macBooks
+const fileStorage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, 'images');
+  },
+  filename: function(req, file, cb) {
+      cb(null, uuidv4()) // create unique alphanumeric file name
+  }
+});
+
+// check if file upload is an image type
+const fileFilter = (req, res, cb) =>{
+  if(file.mimetype == jpg || file.mimetype == png || file.mimetype == jpeg ){
+
+    cb(null, true);
+
+  }else{
+
+    cb(null, false);
+
+  }
+};
 
 const feedRoutes = require('./routes/feed');
 
@@ -13,6 +39,14 @@ const MONGODB_URL = process.env.MONGODB_URL;
 
 // using bodyParser with json() extracts incoming body data from req
 app.use(bodyParser.json());
+
+// using multer 
+app.use(multer({
+  storage: fileStorage,
+  file: fileFilter,
+  })
+  .single('image')
+);
 
 // serve images statically
 app.use('/images', express.static(path.join(__dirname, 'images')));

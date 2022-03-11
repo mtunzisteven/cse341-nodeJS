@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const Post = require('../models/post'); // get the model and in there, the post schema
 
+
 exports.getPosts = (req, res, next) => {
 
     Post.find()
@@ -62,7 +63,7 @@ exports.getPost = (req, res, next) => {
 
 };
 
-exports.postPost = (req, res, next) => {
+exports.creatPost = (req, res, next) => {
 
     const errors = validationResult(req); // fetch all errors caught by express-validator in router
 
@@ -75,13 +76,23 @@ exports.postPost = (req, res, next) => {
         throw error;
     }
 
+    
+    if(!req.file){
+        const error = new Error('Could not find image file!');
+
+        error.statusCode = 422;
+
+        throw error; // will send us to catch block
+    }
+
     const title = req.body.title;
     const content = req.body.content;
+    const imageUrl = req.file.path.replace("\\" ,"/");
 
     const post = new Post({
         title:title, 
         content:content,
-        imageUrl:'images/me.jpg',
+        imageUrl:imageUrl,
         creator: { name: "Mtunzi" }
     })
 

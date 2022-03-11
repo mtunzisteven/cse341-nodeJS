@@ -20,7 +20,7 @@ router.post(
             .trim()
             .isLength({min:5})
     ],
-    feedController.postPost
+    feedController.creatPost
 );
 
 //GET /feed/post/:postId
