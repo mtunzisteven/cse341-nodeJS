@@ -59,7 +59,12 @@ class Feed extends Component {
       })
       .then(resData => {
         this.setState({
-          posts: resData.posts,
+          posts: resData.posts.map(post=>{
+            return {
+              ...post,
+              imagePath: post.imageUrl // path being stored in server
+            };
+          }),
           totalPosts: resData.totalItems,
           postsLoading: false
         });
@@ -112,8 +117,13 @@ class Feed extends Component {
 
     let url = 'http://localhost:8080/feed/post'; // api url entered by us
     let method = "POST";  // entered the method used in api
-    if (this.state.editPost) {
-      url = 'URL';
+    if(this.state.editPost) {
+
+      console.log('PUTing');
+
+      url = 'http://localhost:8080/feed/post/' + this.state.editPost._id; // id accessed in this way in react
+      method = 'PUT';
+
     }
 
     fetch(url,{ // we edited this portion
