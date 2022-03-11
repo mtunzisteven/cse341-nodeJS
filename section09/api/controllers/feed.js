@@ -3,22 +3,64 @@ const Post = require('../models/post'); // get the model and in there, the post 
 
 exports.getPosts = (req, res, next) => {
 
-    // This response(res.json()) returns a json format response to the request
-    // This response(res.status(200).json()) includes status code to assist request understand outcome since they must decide what view to dispay
-    res.status(200).json({
-        posts: [{
-                _id: "1",
-                title:" First Post",
-                content:" This is the first post!", 
-                imageURL: "images/me.jpg",
-                creator: {
-                    name: "Mtunzi"
-                },
-                createdAt: new Date()
-            }]
-    })
+    Post.find()
+        .then(posts=>{
+
+            console.log(posts);
+
+            res.status(200).json({
+                message: 'Fetched posts successfully', 
+                posts:posts
+            });
+
+        })
+        .catch(err=>{
+
+            if(!err.statusCode){ // give error a status code if it is not found 
+
+                err.statusCode = 500;
+
+            } // cannot throw error inside a promise, therefore we send it to next middleware
+
+            next(err); // go to next middleware with err as an argument passed to it.
+        })
 };
 
+exports.getPost = (req, res, next) => {
+
+    const postId = req.params.postId;
+
+    Post.findById(postId)
+    .then(post =>{
+
+        console.log(post);
+
+        if(!post){
+            const error = new Error('Could not find post!');
+
+            error.statusCode = 404;
+
+            throw error; // will send us to catch block
+        }
+
+        // This response(res.json()) returns a json format response to the request
+        // This response(res.status(200).json()) includes status code to assist request understand outcome since they must decide what view to dispay
+        res.status(200).json({
+            post: post
+        })
+    })
+    .catch(err =>{
+
+        if(!err.statusCode){ // give error a status code if it is not found 
+
+            err.statusCode = 500;
+
+        } // cannot throw error inside a promise, therefore we send it to next middleware
+
+        next(err); // go to next middleware with err as an argument passed to it.
+    });
+
+};
 
 exports.postPost = (req, res, next) => {
 
@@ -26,11 +68,11 @@ exports.postPost = (req, res, next) => {
 
     if(!errors.isEmpty()){ // errors is not empty
 
-        return res.status(422).
-                    json({
-                        message:"Validation Failed: Entered data is incorrect!",
-                        errors: errors.array()
-                    });
+        const error = new Error("Validation Failed: Entered data is incorrect!");
+
+        error.statusCode = 422;
+
+        throw error;
     }
 
     const title = req.body.title;
@@ -47,11 +89,6 @@ exports.postPost = (req, res, next) => {
         .then(result=> {
 
             console.log(result);
-
-        })
-        .catch(err =>{
-
-            console.log(err);
             // This response(res.json()) returns a json format response to the request
             // This response(res.status(201).json()) includes status code to assist request understand outcome since they must decide what view to dispay
             // this post would be stored in the db
@@ -59,6 +96,15 @@ exports.postPost = (req, res, next) => {
                 message:'Post created subbessfully!',
                 post: result
             })
+        })
+        .catch(err =>{
 
+            if(!err.statusCode){ // give error a status code if it is not found 
+
+                err.statusCode = 500;
+
+            } // cannot throw error inside a promise, therefore we send it to next middleware
+
+            next(err); // go to next middleware with err as an argument passed to it.
         });
 };

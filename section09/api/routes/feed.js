@@ -20,6 +20,10 @@ router.post(
             .trim()
             .isLength({min:5})
     ],
-    feedController.postPost);
+    feedController.postPost
+);
+
+//GET /feed/post/:postId
+router.get('/post/:postId', feedController.getPost);
 
 module.exports = router;
