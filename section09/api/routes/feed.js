@@ -20,7 +20,7 @@ router.post(
             .trim()
             .isLength({min:5})
     ],
-    feedController.creatPost
+    feedController.createPost
 );
 
 //GET /feed/post/:postId
@@ -37,6 +37,11 @@ router.put(
             .trim()
             .isLength({min:5})
     ], 
-    feedController.updatePost);
+    feedController.updatePost
+);
+
+
+//GET /feed/post/:postId
+router.delete('/post/:postId', feedController.deletePost);
 
 module.exports = router;

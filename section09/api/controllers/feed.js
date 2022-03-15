@@ -6,12 +6,26 @@ const path = require('path');
 
 exports.getPosts = (req, res, next) => {
 
+    let currentPage = req.query.page || 1; // current page or initial page
+    const perPage = 2;
+    let totalItems;
+
     Post.find()
+        .countDocuments() // get the total number of posts in the db(posts docuements)
+        .then(count=>{
+
+            totalItems =count;
+
+            return Post.find()
+                .skip((currentPage - 1) * perPage)
+                .limit(perPage) // per page set
+        })
         .then(posts=>{
 
             res.status(200).json({
                 message: 'Fetched posts successfully', 
-                posts:posts
+                posts:posts,
+                totalItems: totalItems
             });
 
         })
@@ -63,7 +77,7 @@ exports.getPost = (req, res, next) => {
 
 };
 
-exports.creatPost = (req, res, next) => {
+exports.createPost = (req, res, next) => {
 
     const errors = validationResult(req); // fetch all errors caught by express-validator in router
 
@@ -142,8 +156,6 @@ exports.updatePost = (req, res, next) => {
     if(req.file){ // When a new image update is made
 
         imageUrl = req.file.path.replace("\\" ,"/");
-
-        console.log(imageUrl);
     }
 
     if(!imageUrl){ // if failed to load file on both above ways, throw an error
@@ -158,8 +170,6 @@ exports.updatePost = (req, res, next) => {
     Post.findById(postId)
     .then(post =>{
 
-        console.log('Update Post COntroller');
-
         if(!post){
             const error = new Error('Could not find post!');
 
@@ -170,6 +180,8 @@ exports.updatePost = (req, res, next) => {
 
         // When the image url saved in images is not equal to the posted(put) url, the image has been replaced.
         if(imageUrl !== post.imageUrl){
+
+            console.log(post.imageUrl);
 
             clearImage(post.imageUrl); // delete the old file that has been replaced in the post being updated.
 
@@ -201,6 +213,44 @@ exports.updatePost = (req, res, next) => {
         next(err); // go to next middleware with err as an argument passed to it.
     });
 };
+
+exports.deletePost = (req, res, next) => {
+
+    const postId = req.params.postId;
+
+    Post.findById(postId)
+    .then(post=>{
+
+        if(!post){
+            const error = new Error('Could not find post!');
+
+            error.statusCode = 404;
+
+            throw error; // will send us to catch block
+        }
+
+        // checked logged in user
+        clearImage(post.imageUrl);
+
+        // delete post
+        return Post.findByIdAndRemove(postId);
+    })
+    .then(result=>{
+        res.status(200).json({massage:"Post deleted successfully"});
+    })
+    .catch(err =>{
+
+        if(!err.statusCode){ // give error a status code if it is not found 
+
+            err.statusCode = 500;
+
+        } // cannot throw error inside a promise, therefore we send it to next middleware
+
+        next(err); // go to next middleware with err as an argument passed to it.
+    });
+
+}
+
 
 const clearImage = filePath =>{
 
