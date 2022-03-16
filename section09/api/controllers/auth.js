@@ -49,37 +49,6 @@ exports.signup = (req, res, next) => {
     
             next(err); // go to next middleware with err as an argument passed to it.
         })
-
-
-    const user = new User({
-        email:email, 
-        password:password,
-        name:name,
-        status:status
-    })
-
-    user.save()
-        .then(result=> {
-
-            console.log(result);
-            // This response(res.json()) returns a json format response to the request
-            // This response(res.status(201).json()) includes status code to assist request understand outcome since they must decide what view to dispay
-            // this user would be stored in the db
-            res.status(201).json({
-                message:'User created subbessfully!',
-                user: result
-            });
-        })
-        .catch(err =>{
-
-            if(!err.statusCode){ // give error a status code if it is not found 
-
-                err.statusCode = 500;
-
-            } // cannot throw error inside a promise, therefore we send it to next middleware
-
-            next(err); // go to next middleware with err as an argument passed to it.
-        });
 };
 
 exports.login = (req, res, next) => {
@@ -104,7 +73,7 @@ exports.login = (req, res, next) => {
             loadedUser = user;
             return bcrypt.compare(password, user.password); // check password is correct
         })
-        then(passwordCorrect=>{
+        .then(passwordCorrect=>{
 
             if(!passwordCorrect){// give error a status code if it is not correct 
 

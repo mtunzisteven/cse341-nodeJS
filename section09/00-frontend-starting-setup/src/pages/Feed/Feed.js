@@ -50,7 +50,11 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page }); 
     }
-    fetch('http://localhost:8080/feed/posts?page='+page) // posts viewing url in the API
+    fetch('http://localhost:8080/feed/posts?page='+page, {
+      headers:{
+        Authorization: 'Bearer '+this.props.token //  Bear part is simply convetion. You could leave it out
+      }
+    }) // posts viewing url in the API
       .then(res => {
         if (res.status !== 200) {
           throw new Error('Failed to fetch posts.');

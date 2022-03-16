@@ -24,8 +24,7 @@ router.put(
                                 return Promise.reject('E-mail already exists!');
                             }
                         });
-            })
-            .normalizeEmail(),
+            }),
         body('name')
             .trim()
             .not()          // is not
@@ -39,6 +38,6 @@ router.put(
 );
 
 //POST /auth/login/
-router.post('/signup/', authController.login); // not validated becausse checks are done in the controller
+router.post('/login',authController.login); // not validated becausse checks are done in the controller
 
 module.exports = router;
