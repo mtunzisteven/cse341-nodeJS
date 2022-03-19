@@ -7,7 +7,6 @@ module.exports = (req, res, next) => {
     if(!authHeader){
         const error = new Error('Not Authenticated[No authHeader]: Error!');
         error.statusCode = 401;
-        throw error;
     }
 
     const token = authHeader.split(' ')[1];
@@ -15,7 +14,7 @@ module.exports = (req, res, next) => {
     let decodedToken;
 
     try{
-        decodedToken = jwt.verify(token, 'somedevelopercreatedsecretusedtosignthetoken');
+        decodedToken = jwt.verify(token, 'somedevelopercreatedsecretusedtosignthetoken'); // same secret created in login middleware of auth controller
 
     } catch(err){
         err.statusCode = 500;
@@ -28,6 +27,6 @@ module.exports = (req, res, next) => {
         throw error;
     }
 
-    req.userId = decodedToken.uderId;
+    req.userId = decodedToken.userId;
     next();
 };

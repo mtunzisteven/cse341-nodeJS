@@ -31,8 +31,7 @@ router.put(
             .isEmpty(),     // empty
         body('password')
             .trim()
-            .isLength({min:6})
-            .isAlphanumeric(),
+            .isLength({min:6}),
     ], 
     authController.signup
 );

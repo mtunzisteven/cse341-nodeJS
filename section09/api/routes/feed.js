@@ -8,11 +8,16 @@ const isAuth = require('../middleware/is-auth');
 const router = express.Router();
 
 //GET /feed/posts
-router.get('/posts', isAuth, feedController.getPosts);
+router.get(
+    '/posts', 
+    isAuth, 
+    feedController.getPosts
+);
 
 //POST /feed/post
 router.post(
     '/post', 
+    isAuth,
     [ // validation middleware uses {check} above
         body('title')
             .trim()
@@ -25,11 +30,16 @@ router.post(
 );
 
 //GET /feed/post/:postId
-router.get('/post/:postId', feedController.getPost);
+router.get(
+    '/post/:postId',  
+    isAuth,
+    feedController.getPost
+    );
 
 //PUT /feed/post/:postId
 router.put(
-    '/post/:postId',    
+    '/post/:postId',   
+    isAuth,  
     [ // validation middleware uses {check} above
         body('title')
             .trim()
@@ -43,6 +53,10 @@ router.put(
 
 
 //GET /feed/post/:postId
-router.delete('/post/:postId', feedController.deletePost);
+router.delete(
+    '/post/:postId', 
+    isAuth,
+    feedController.deletePost
+);
 
 module.exports = router;

@@ -9,7 +9,7 @@ require('dotenv').config(); // import config values
 
 const app = express();
 
-// file upload/download middleware for macBooks
+// file upload middleware 
 const fileStorage = multer.diskStorage({
   destination: function(req, file, cb) {
       cb(null, 'images');
@@ -19,7 +19,7 @@ const fileStorage = multer.diskStorage({
   }
 });
 
-// check if file upload is an image type
+// check if file upload is the correct image type
 const fileFilter = (req, res, cb) =>{
   if(file.mimetype == jpg || file.mimetype == png || file.mimetype == jpeg ){
 
@@ -41,7 +41,7 @@ const MONGODB_URL = process.env.MONGODB_URL;
 // using bodyParser with json() extracts incoming body data from req
 app.use(bodyParser.json());
 
-// using multer 
+// using multer to upload images
 app.use(multer({
   storage: fileStorage,
   file: fileFilter,

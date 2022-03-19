@@ -52,7 +52,7 @@ class Feed extends Component {
     }
     fetch('http://localhost:8080/feed/posts?page='+page, {
       headers:{
-        Authorization: 'Bearer '+this.props.token //  Bear part is simply convetion. You could leave it out
+        Authorization: 'Bearer '+this.props.token //  Bear part is simply convention. You could leave it out
       }
     }) // posts viewing url in the API
       .then(res => {
@@ -132,7 +132,10 @@ class Feed extends Component {
 
     fetch(url,{ // we edited this portion
         method: method,
-        body: formData
+        body: formData,
+        headers:{
+          Authorization: 'Bearer '+this.props.token //  Bear part is simply convention. You could leave it out
+        }
       })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
@@ -185,7 +188,10 @@ class Feed extends Component {
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/post/'+postId, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers:{
+        Authorization: 'Bearer '+this.props.token //  Bear part is simply convention. You could leave it out
+      }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {

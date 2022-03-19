@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const Post = require('../models/post'); // get the model and in there, the post schema
+const User = require('../models/user'); // get the model and in there, the post schema
 const fs = require('fs');
 const path = require('path');
 
@@ -79,6 +80,8 @@ exports.getPost = (req, res, next) => {
 
 exports.createPost = (req, res, next) => {
 
+    console.log('UserId: '+req.userId);
+
     const errors = validationResult(req); // fetch all errors caught by express-validator in router
 
     if(!errors.isEmpty()){ // errors is not empty
@@ -102,24 +105,33 @@ exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
     const imageUrl = req.file.path.replace("\\" ,"/");
-
+    let creator;
     const post = new Post({
         title:title, 
         content:content,
         imageUrl:imageUrl,
-        creator: { name: "Mtunzi" }
+        creator: req.userId // req.userId defined at authentication of user
     })
 
-    post.save()
+    post.save() // store post in db
         .then(result=> {
+            return User.findById(req.userId); // get back the user logged using authentication defined userId
 
-            console.log(result);
+        })
+        .then(user =>{
+            creator = user; // save the user object in a variable so it can be passed through further then statements
+
+            user.posts.push(post); // add the post to the user in the db
+            return user.save(); // save the user with the new post added
+        })
+        .then(result => {
+
             // This response(res.json()) returns a json format response to the request
-            // This response(res.status(201).json()) includes status code to assist request understand outcome since they must decide what view to dispay
             // this post would be stored in the db
             res.status(201).json({
                 message:'Post created subbessfully!',
-                post: result
+                post: post,
+                creator: {_id: creator._id, name: creator.name }
             });
         })
         .catch(err =>{
