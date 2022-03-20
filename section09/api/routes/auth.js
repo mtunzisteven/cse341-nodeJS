@@ -3,6 +3,8 @@ const { body } = require('express-validator');
 
 
 const authController = require('../controllers/auth');
+const isAuth = require('../middleware/is-auth');
+
 const User = require('../models/user');
 
 const router = express.Router();
@@ -37,6 +39,21 @@ router.put(
 );
 
 //POST /auth/login/
-router.post('/login',authController.login); // not validated becausse checks are done in the controller
+router.post('/login', authController.login); // not validated becausse checks are done in the controller
+
+//GET /auth/status/
+router.get('/status', isAuth, authController.getUserStatus); 
+
+//get /auth/status/
+router.patch(
+    '/status', 
+    isAuth, [
+        body('status')
+            .trim()
+            .not()
+            .isEmpty()
+    ], 
+    authController.updateUserStatus
+); 
 
 module.exports = router;

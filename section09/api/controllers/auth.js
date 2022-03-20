@@ -112,3 +112,73 @@ exports.login = (req, res, next) => {
         });
 
 };
+
+exports.getUserStatus = (req, res, next) => {
+
+    User.findById(req.userId)
+        .then(user =>{
+
+
+            if(!user){
+
+                const error = new Error('User not found');
+                error.statusCode = 404;
+
+                throw error;
+
+            }
+
+            // This response(res.json()) returns a json format response to the request
+            // This response(res.status(201).json()) includes status code to assist request understand outcome since they must decide what view to dispay
+            res.status(200).json({
+                status:user.status
+            });
+        })
+        .catch(err =>{
+
+            if(!err.statusCode){ // give error a status code if it is not found 
+
+                err.statusCode = 500;
+
+            } // cannot throw error inside a promise, therefore we send it to next middleware
+
+            next(err); // go to next middleware with err as an argument passed to it.
+        });
+};
+
+exports.updateUserStatus= (req, res, next) => {
+
+    const newStatus = req.body.status;
+
+    User.findById(req.userId)
+        .then(user =>{
+
+
+            if(!user){
+
+                const error = new Error('User not found');
+                error.statusCode = 404;
+
+                throw error;
+
+            }
+
+            user.status = newStatus;
+
+            user.save();
+
+            // This response(res.json()) returns a json format response to the request
+            // This response(res.status(201).json()) includes status code to assist request understand outcome since they must decide what view to dispay
+            res.status(200).json({ message:'Status update successful!' });
+        })
+        .catch(err =>{
+
+            if(!err.statusCode){ // give error a status code if it is not found 
+
+                err.statusCode = 500;
+
+            } // cannot throw error inside a promise, therefore we send it to next middleware
+
+            next(err); // go to next middleware with err as an argument passed to it.
+        });
+};

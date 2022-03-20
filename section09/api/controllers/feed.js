@@ -11,17 +11,22 @@ exports.getPosts = (req, res, next) => {
     const perPage = 2;
     let totalItems;
 
-    Post.find()
+    Post.find({creator:req.userId}) // get posts by the specific user, not ones created by another user(for total posts count)
         .countDocuments() // get the total number of posts in the db(posts docuements)
         .then(count=>{
 
             totalItems =count;
 
-            return Post.find()
+            return Post.find({creator:req.userId}) // for display
                 .skip((currentPage - 1) * perPage)
                 .limit(perPage) // per page set
         })
         .then(posts=>{
+
+            // end the sherade if there is no posts found
+            if(!posts){
+                return;
+            }
 
             res.status(200).json({
                 message: 'Fetched posts successfully', 
@@ -80,8 +85,6 @@ exports.getPost = (req, res, next) => {
 
 exports.createPost = (req, res, next) => {
 
-    console.log('UserId: '+req.userId);
-
     const errors = validationResult(req); // fetch all errors caught by express-validator in router
 
     if(!errors.isEmpty()){ // errors is not empty
@@ -93,7 +96,7 @@ exports.createPost = (req, res, next) => {
         throw error;
     }
 
-    
+    // if the image file is not found as uploaded in the app.js file
     if(!req.file){
         const error = new Error('Could not find image file!');
 
@@ -146,7 +149,6 @@ exports.createPost = (req, res, next) => {
         });
 };
 
-
 exports.updatePost = (req, res, next) => {
 
     const postId = req.params.postId;
@@ -182,10 +184,20 @@ exports.updatePost = (req, res, next) => {
     Post.findById(postId)
     .then(post =>{
 
+        // Check if post was found
         if(!post){
             const error = new Error('Could not find post!');
 
             error.statusCode = 404;
+
+            throw error; // will send us to catch block
+        }
+
+        // check if the user trying to update the post is the logged in user
+        if(post.creator.toString() !== req.userId){
+            const error = new Error('Cannot edit post created by another user');
+
+            error.statusCode = 403;
 
             throw error; // will send us to catch block
         }
@@ -241,11 +253,29 @@ exports.deletePost = (req, res, next) => {
             throw error; // will send us to catch block
         }
 
+        
+        // check if the user trying to update the post is the logged in user
+        if(post.creator.toString() !== req.userId){
+            const error = new Error('Cannot delete post created by another user');
+
+            error.statusCode = 403;
+
+            throw error; // will send us to catch block
+        }
+
         // checked logged in user
         clearImage(post.imageUrl);
 
         // delete post
         return Post.findByIdAndRemove(postId);
+    })
+    .then(result => {
+        return User.findById(req.userId); // find the specific user from db
+    })
+    .then(user =>{
+
+        user.posts.pull(postId); // remove the post with the matching id
+        return user.save();
     })
     .then(result=>{
         res.status(200).json({massage:"Post deleted successfully"});
@@ -264,6 +294,7 @@ exports.deletePost = (req, res, next) => {
 }
 
 
+// function for deleting an image in the server
 const clearImage = filePath =>{
 
     filePath = path.join(__dirname, '..', filePath);
