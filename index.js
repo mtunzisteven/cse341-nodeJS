@@ -1,5 +1,4 @@
 const path = require('path');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -8,6 +7,8 @@ const session = require('express-session');
 const sessionDBStorage = require('connect-mongodb-session')(session); // session constant passed to a function stored in sessionDBstorage
 const csrf = require('csurf'); // import csrf token manager 
 const flash = require('connect-flash'); // import session flash message manager 
+const multer = require('multer'); // file upload download package for non-Windows computers
+const { v4: uuidv4 } = require('uuid'); // file upload download package for Windows computers
 require('dotenv').config(); // import config values
 
 const errorController = require('./controllers/errors');
@@ -45,9 +46,47 @@ const authRoutes = require('./routes/auth');
 // get the user model into scope
 const User = require('./models/user');
 
+
+// file upload middleware | storage key to be used in multer
+const fileStorage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, 'images'); // define destination folder, if none, new one created
+  },
+  filename: function(req, file, cb) {
+      cb(null, uuidv4()+'-'+file.originalname) // uuidv4 gives unique name | file.originalname preserves the file extension
+  } // create unique alphanumeric file name
+});
+
+// check if file upload is the correct image(mime) type
+const fileFilter = (req, res, cb) =>{
+  if(file.mimetype == jpg || file.mimetype == png || file.mimetype == jpeg ){
+
+    cb(null, true);
+ 
+  }else{
+
+    cb(null, false);
+
+  }
+};
+
+// using multer to upload images
+app.use(multer({
+  storage: fileStorage, // 1st element of the object arg of multer() is storage location of file(defined above)
+  file: fileFilter,     // 2nd element of the object arg of multer() is file filtration info(defined above)
+  })
+  .single('image') // specifies that we'll input a single image and 'image' points to the input name
+);
+
+// serve images statically
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// bring public folder into scope
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 // initialize body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // setup session storage middle ware(storage in the database)
 // secret: used for signing the hash that secretly saves the id in a cookie. the value must be a long string in production

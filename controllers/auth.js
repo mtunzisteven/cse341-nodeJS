@@ -26,7 +26,7 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        errorMessage: errorMessage, // send flash message for signup error to ../views/auth/login.ejs page for display in div
+        errorMessage: errorMessage, // send flash message for error to ../views/auth/login.ejs page for display in div
         loginData: {
             email: '',
             password: '',

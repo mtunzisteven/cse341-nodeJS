@@ -60,7 +60,7 @@ app.use((error, req, res, next)=>{
   const status = error.statusCode || 500;
   const message = error.message;
 
-  res.status(status).json({message:message}); // returnn the error to the user
+  res.status(status).json({message:message}); // return the error to the user
 
 });
 

@@ -1,31 +1,62 @@
 const Product = require('../models/product');
+const {validationResult} = require('express-validator'); // import validationResult method of express validator sub package that stores all errors stored at 'check(property).isProperty'
 
 exports.getAddProduct = (req, res, next) => {
 
-  if(!req.session.isLoggedIn){ // send user to login if not logged in
-    return res.redirect('/login');
-  }else if(!res.locals.admin){
-    return res.redirect('/');
-  }
+  let  errorMessage = null;
 
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false,
-
+    errorMessage: errorMessage, // send flash message for error to ../views/auth/login.ejs page for display in div
+    editing: false
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
+
+  
+  // if the image file is not found as uploaded in the app.js file
+  if(!req.file){
+
+    const error = new Error('Could not find image file!');
+
+    error.statusCode = 422;
+
+    throw error; // will send us to catch block
+  }
+
+  // extract form data from request 
   const title = req.body.title;
-  const imgUrl = req.body.imgUrl;
+  const image = req.file.path.replace("\\" ,"/");
   const price = req.body.price;
   const description = req.body.description;
+
+  let errors = validationResult(req); // get all erros stored by check in this request
+
+  // when errors are found, we'll redirect add products page and send error message from express validator
+  if(!errors.isEmpty()){
+
+    return res.status(422)
+    .render('admin/edit-product', {
+        path: '/admin/add-product',
+        pageTitle: 'Add Product',
+        errorMessage: errors.array()[0].msg, // send message for signup error to ../views/auth/signup.ejs page for display in div
+        productData: {
+          title: title, 
+          price: price, 
+          description: description, 
+          image: image
+        },
+        editing: false
+    });
+  }
+
   product = new Product({
     title: title, 
     price: price, 
     description: description, 
-    imgUrl: imgUrl, 
+    imgUrl: image, 
     userId: req.user, // mongoose will pick out the id even though we added all user data
 
   });
@@ -44,6 +75,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
 
+  let  errorMessage = null;
 
   const editMode = req.query.edit;
   if (!editMode) {
@@ -63,6 +95,7 @@ exports.getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editing: editMode,
         product: product,
+        errorMessage: errorMessage
 
       });
     })
@@ -70,11 +103,43 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
+
+  // if the image file is not found as uploaded in the app.js file
+  if(!req.file){
+
+    const error = new Error('Could not find image file!');
+
+    error.statusCode = 422;
+
+    throw error; // will send us to catch block
+  }
+
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedimgUrl = req.body.imgUrl;
+  const updatedimage = req.file.path.replace("\\" ,"/");
   const updatedDesc = req.body.description;
+
+  let errors = validationResult(req); // get all erros stored by check in this request
+
+  // when errors are found, we'll redirect edit products page and send error message from express validator
+  if(!errors.isEmpty()){
+
+    return res.status(422)
+    .render('admin/edit-product', {
+        path: '/admin/edit-product',
+        pageTitle: 'Edit Product',
+        errorMessage: errors.array()[0].msg, // send message for signup error to ../views/auth/signup.ejs page for display in div
+        productData: {
+          title: title, 
+          price: price, 
+          description: description, 
+          image: updatedimage
+        },
+        editing: true
+    });
+  }
+
   Product.findById(prodId) // Mongoose fn returns product by id from db
   .then(product =>{
 
@@ -117,6 +182,9 @@ exports.getProducts = (req, res, next) => {
 
   Product.find() // mongoose function returns products from db
   .then(products => {
+
+    console.log(products[0].imgUrl);
+
       res.render('admin/products', {
           prods: products,
           pageTitle: 'Admin Products',

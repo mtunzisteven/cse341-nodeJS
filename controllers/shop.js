@@ -5,6 +5,11 @@ const Order = require('../models/order');
 exports.getProducts = (req, res, next) => {
   Product.find() // mongoose function
     .then(products => {
+      
+
+      console.log(products[0].imgUrl);
+
+
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
