@@ -1,4 +1,5 @@
-const Product = require('../models/product');
+const Product = require('../models/product'); // Product object
+const fileHelper = require('../util/file'); // file helper
 const {validationResult} = require('express-validator'); // import validationResult method of express validator sub package that stores all errors stored at 'check(property).isProperty'
 
 exports.getAddProduct = (req, res, next) => {
@@ -142,6 +143,8 @@ exports.postEditProduct = (req, res, next) => {
     // if the image file is found as uploaded in the app.js file, then update
     if(updatedimage){
 
+      fileHelper.deleteFile(product.imgUrl); // delete the image at the end of the file path/url
+
       product.imgUrl = updatedimage.path.replace("\\" ,"/");
 
     }
@@ -193,8 +196,18 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndRemove(prodId) // Mongoose function for deleting product by id
-    .then(result => {
+  Product.findById(prodId) // Mongoose function for deleting product by id
+    .then(product => {
+      if(!product){
+        return next(new Error('Product not Found!'))
+      }
+
+      fileHelper.deleteFile(product.imgUrl); // delete the image at the end of the file path/url
+
+      return Product.findByIdAndDelete(product._id);
+
+    })
+    .then(result=>{
       res.redirect('/admin/products');
     })
     .catch(err => console.log(err));

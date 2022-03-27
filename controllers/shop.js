@@ -9,10 +9,6 @@ const Order = require('../models/order');
 exports.getProducts = (req, res, next) => {
   Product.find() // mongoose function
     .then(products => {
-      
-
-      console.log(products[0].imgUrl);
-
 
       res.render('shop/product-list', {
         prods: products,
@@ -161,7 +157,24 @@ exports.getInvoice = (req, res, next) => {
       pdfDoc.pipe(fs.createWriteStream(invoicePath)); // makes sure whatever we write is forwarded to the deifined file 
       pdfDoc.pipe(res); // ensures that everything we write is returned to the user in the client
 
-      pdfDoc.fontSize(26).text('Invoice');
+      pdfDoc.fontSize(26).text('Invoice', {
+        underline: true
+      });
+
+      pdfDoc.text('---------------------------------------------');
+
+      let totalPrice = 0;
+      order.products.forEach(prod => { // remember that products is an array of objects with product objects in each
+        totalPrice += prod.product.price * prod.quantity;
+
+        pdfDoc.fontSize(14).text(`${prod.product.title} - R${prod.product.price} * ${prod.quantity}`);
+
+      });
+
+      pdfDoc.text('--------------');
+
+
+      pdfDoc.fontSize(20).text(`R${totalPrice}`);
 
       pdfDoc.end();
 
