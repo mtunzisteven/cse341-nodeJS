@@ -22,4 +22,6 @@ router.post('/create-order', isAuth, shopController.postOrder); //  shopControll
 
 router.get('/orders', isAuth, shopController.getOrders); //  shopController.getOrders funnelled through isAuth
 
+router.get('/orders/:orderId', isAuth, shopController.getInvoice); //  shopController.getInvoice funnelled through isAuth
+
 module.exports = router;

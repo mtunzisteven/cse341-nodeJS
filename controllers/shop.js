@@ -1,3 +1,7 @@
+const fs = require('fs');
+const path = require('path');
+const pdfConstructor = require('pdfkit');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -131,4 +135,68 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch(err => console.log(err));
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  const invoiceName = `invoice-${orderId}.pdf`;
+  const invoicePath = path.join('data','invoices', invoiceName); // data/invoices/[fileName]
+
+  Order.findById(orderId)
+  .then(order => {
+
+    if(!order){
+
+      return new Error('Order not found!');
+
+    }
+
+    if(order.user.userId.toString() == req.user._id.toString()){
+
+      const pdfDoc = new pdfConstructor(); // a readable stream that can be streamed
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="'+invoiceName+'"');
+
+      pdfDoc.pipe(fs.createWriteStream(invoicePath)); // makes sure whatever we write is forwarded to the deifined file 
+      pdfDoc.pipe(res); // ensures that everything we write is returned to the user in the client
+
+      pdfDoc.fontSize(26).text('Invoice');
+
+      pdfDoc.end();
+
+      // The below way to read a file eats too much memory and takes time if the file is large, because reading must complete before data is returned
+      // fs.readFile(invoicePath, (err, data)=>{
+
+      //   if(err){
+      //     console.log('gets here err!');
+
+      //     return next(err); // go to next middleware carrying the error for catching in catch block
+      //   }
+    
+      //   res.setHeader('Content-Type', 'application/pdf');
+      //   res.setHeader('Content-Disposition', 'inline; filename="'+invoiceName+'"'); // replace inline with attachement and the file is downloaded instead of viewed on the web
+    
+      //   res.send(data);
+      // });
+
+      // this method is better at handling large files as it streams chunks to client
+      // const file = fs.createReadStream(invoicePath);
+
+      // res.setHeader('Content-Type', 'application/pdf');
+      // res.setHeader('Content-Disposition', 'inline; filename="'+invoiceName+'"');
+
+      // file.pipe(res); // write the data into the response object
+
+
+    }else{
+      return new Error('Not Authorized!'); 
+    }
+
+  })
+  .catch(err=>{  
+
+    console.log(err);
+
+  });
 };

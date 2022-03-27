@@ -104,21 +104,12 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
 
-  // if the image file is not found as uploaded in the app.js file
-  if(!req.file){
-
-    const error = new Error('Could not find image file!');
-
-    error.statusCode = 422;
-
-    throw error; // will send us to catch block
-  }
 
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedimage = req.file.path.replace("\\" ,"/");
   const updatedDesc = req.body.description;
+  const updatedimage =req.file; 
 
   let errors = validationResult(req); // get all erros stored by check in this request
 
@@ -145,9 +136,15 @@ exports.postEditProduct = (req, res, next) => {
 
     // update all product attributes for the specific product
     product.title = updatedTitle;
-    product.imgUrl = updatedimgUrl;
     product.price = updatedPrice;
     product.description = updatedDesc;
+
+    // if the image file is found as uploaded in the app.js file, then update
+    if(updatedimage){
+
+      product.imgUrl = updatedimage.path.replace("\\" ,"/");
+
+    }
 
     return product.save() // mongoose function that will update the fetched product in the db
 
@@ -182,8 +179,6 @@ exports.getProducts = (req, res, next) => {
 
   Product.find() // mongoose function returns products from db
   .then(products => {
-
-    console.log(products[0].imgUrl);
 
       res.render('admin/products', {
           prods: products,
