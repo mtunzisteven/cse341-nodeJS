@@ -105,25 +105,6 @@ app.use(csrfProtection); // register csrf token after session creation code
 
 app.use(flash()); // register flash token after session creation code
 
-// more elegant way to handle all errors
-app.use((error, req, res, next)=>{
-
-  console.log(error); // log the error for me
-
-  const status = error.statusCode || 500;
-  const message = error.message;
-
-  // redirect error page
-  res.render('/error', {
-    path: '/error',
-    pageTitle: 'Error!',
-    status: status,
-    message: message
-
-  });
-
-});
-
 // // find the user in the db
 // // if found, we proceed to set user object into each request on the app.
 app.use((req, res, next) => {

@@ -1,5 +1,7 @@
 const Product = require('../models/product'); // Product object
 const fileHelper = require('../util/file'); // file helper
+const serverError = require('../util/serverError'); // server error helper
+
 const {validationResult} = require('express-validator'); // import validationResult method of express validator sub package that stores all errors stored at 'check(property).isProperty'
 
 exports.getAddProduct = (req, res, next) => {
@@ -69,9 +71,8 @@ exports.postAddProduct = (req, res, next) => {
     console.log('Created Product');
     res.redirect('/admin/products');
   })
-  .catch(err => {
-    console.log(err);
-  });
+  .catch(err => serverError(err, res));
+
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -100,7 +101,7 @@ exports.getEditProduct = (req, res, next) => {
 
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => serverError(err, res));
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -157,9 +158,8 @@ exports.postEditProduct = (req, res, next) => {
     console.log('UPDATED PRODUCT!');
     res.redirect('/admin/products');
   })
-  .catch(err => {
-    console.log(err);
-  });
+  .catch(err => serverError(err, res));
+
 };
 
 exports.getProducts = (req, res, next) => {
@@ -191,7 +191,7 @@ exports.getProducts = (req, res, next) => {
 
       });
   })
-  .catch(err => console.log(err));
+  .catch(err => serverError(err, res));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -210,5 +210,5 @@ exports.postDeleteProduct = (req, res, next) => {
     .then(result=>{
       res.redirect('/admin/products');
     })
-    .catch(err => console.log(err));
+    .catch(err => serverError(err, res));
 };

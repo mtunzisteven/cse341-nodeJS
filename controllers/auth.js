@@ -5,6 +5,8 @@ const nodemailer = require('nodemailer');
 const sendgrindTransport = require('nodemailer-sendgrid-transport');
 require('dotenv').config(); // import config values
 
+const serverError = require('../util/serverError'); // server error helper
+
 const User = require('../models/user');
 
 // url for reset password
@@ -59,7 +61,7 @@ exports.postLogin = (req, res, next) => {
         
         if(err){
             req.flash('loginMsg', 'Internal error, please try again.');  // create flash message for login error
-            console.log(err);
+            next(err);
         }
         res.redirect('/'); // go to home page if passwords matched
     })
@@ -70,7 +72,7 @@ exports.postLogout = (req, res, next) => {
     req.session.destroy(err =>{
                     
         if(err){
-            console.log(err);
+            next(err);
         }
         res.redirect('/');
     });
@@ -135,7 +137,7 @@ exports.postSignup = (req, res, next) => {
                 html: '<h1>You Have Successfully Signed Up!'
             })
             .catch(err => {
-                console.log(err)
+                next(err)
           })
         })
 };
@@ -161,7 +163,7 @@ exports.postReset = (req, res, next) => {
 
         // if there's an error generating 32 bytes random bytes value with crypto.Random
         if(err){
-            console.log(err);
+            next(err);
             return res.redirect('/reset');
         }
 
@@ -198,9 +200,7 @@ exports.postReset = (req, res, next) => {
                     html: `<p>Hello. You requested a password reset. Please click on this <a href=${APP_URL}/reset/${token}'>link</a> to reset your password.</p>`
                 })
             })
-            .catch(err => {
-                console.log(err); 
-            });
+            .catch(err => serverError(err, res));
     });
 };
 
@@ -223,9 +223,8 @@ exports.getNewPassword = (req, res, next) => {
             passwordToken: token // passing this for the hidden input that receives it
         });
     })
-    .catch(err => {
-        console.log(err);
-    });
+    .catch(err => serverError(err, res));
+
   };
 
 exports.postNewPassword = (req, res, next) => {
@@ -263,7 +262,6 @@ exports.postNewPassword = (req, res, next) => {
     .then(result => {
         res.redirect('/login');
     })
-    .catch(err => {
-        console.log(err);
-    });
+    .catch(err => serverError(err, res));
+
 };

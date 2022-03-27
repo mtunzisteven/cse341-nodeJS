@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const pdfConstructor = require('pdfkit');
+const serverError = require('../util/serverError'); // server error helper
 
 const Product = require('../models/product');
 const Order = require('../models/order');
@@ -17,9 +18,8 @@ exports.getProducts = (req, res, next) => {
 
       });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(err => serverError(err, res));
+
 };
 
 exports.getProduct = (req, res, next) => {
@@ -33,7 +33,7 @@ exports.getProduct = (req, res, next) => {
 
       });
     })
-    .catch(err => console.log(err))
+    .catch(err => serverError(err, res));
   };
 
 exports.getIndex = (req, res, next) => {
@@ -46,9 +46,8 @@ exports.getIndex = (req, res, next) => {
 
       });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(err => serverError(err, res));
+
 };
 
 exports.getCart = (req, res, next) => {
@@ -64,7 +63,7 @@ exports.getCart = (req, res, next) => {
         
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => serverError(err, res));
 };
 
 exports.postCart = (req, res, next) => {
@@ -75,7 +74,9 @@ exports.postCart = (req, res, next) => {
   })
   .then(result=>{
     res.redirect('/cart');
-  });
+  })
+  .catch(err => serverError(err, res));
+
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -85,7 +86,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
   .then(result => {
     res.redirect('/cart');
   })
-  .catch(err => console.log(err));
+  .catch(err => serverError(err, res));
 };
 
 exports.postOrder = (req, res, next) => {
@@ -110,13 +111,13 @@ exports.postOrder = (req, res, next) => {
       return order.save();
 
     })
-  .then(result =>{
-    return req.user.clearCart();
-  })
-  .then(result =>{
-    res.redirect('/orders');
-  })
-  .catch(err => console.log(err));
+    .then(result =>{
+      return req.user.clearCart();
+    })
+    .then(result =>{
+      res.redirect('/orders');
+    })
+    .catch(err => serverError(err, res));
 };
 
 exports.getOrders = (req, res, next) => {
@@ -130,7 +131,7 @@ exports.getOrders = (req, res, next) => {
 
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => serverError(err, res));
 };
 
 exports.getInvoice = (req, res, next) => {
@@ -184,7 +185,17 @@ exports.getInvoice = (req, res, next) => {
       //   if(err){
       //     console.log('gets here err!');
 
-      //     return next(err); // go to next middleware carrying the error for catching in catch block
+      //     return   const status = error.statuscode || 500;
+  const message = error.message;
+
+  // redirect error page
+  res.status(status).render('error', {
+    path: '/error',
+    pagetitle: 'error!',
+    status: status,
+    message: message
+
+  }); // go to next middleware carrying the error for catching in catch block
       //   }
     
       //   res.setHeader('Content-Type', 'application/pdf');
@@ -207,9 +218,6 @@ exports.getInvoice = (req, res, next) => {
     }
 
   })
-  .catch(err=>{  
+  .catch(err => serverError(err, res));
 
-    console.log(err);
-
-  });
 };
