@@ -6,10 +6,10 @@
     <%- include('../includes/navigation.ejs') %>
 
     <main>
+        <div class="hero">
+            <h1>Welcome to Our Shopping Experience</h1>
+        </div>
         <% if (prods.length > 0) { %>
-            <div class="hero">
-                <h1>Welcome to Our Shopping Experience</h1>
-            </div>
             <div class="grid">
                 <% for (let product of prods) { %>
                     <article class="card product-item">
@@ -40,7 +40,7 @@
                 <% } %>
             </div>
         <% } else { %>
-            <h1>No Products Found!</h1>
+            <h2>No Products Found!</h2>
         <% } %>
     </main>
 <%- include('../includes/end.ejs') %>
