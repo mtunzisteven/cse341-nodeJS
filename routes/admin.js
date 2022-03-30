@@ -64,7 +64,7 @@ router.post(
     adminController.postEditProduct
 ); //  adminController.postEditProduct funnelled through isAuth
 
-// // /admin/delete-product => POST
-router.post('/delete-product', isAuth, adminController.postDeleteProduct); //  adminController.postDeleteProduct funnelled through isAuth
+// // /admin/product/:productId => DELETE
+router.delete('/product/:productId', isAuth, adminController.deleteProduct); //  adminController.deleteProduct funnelled through isAuth
 
 module.exports = router;

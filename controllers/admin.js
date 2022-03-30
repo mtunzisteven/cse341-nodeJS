@@ -194,8 +194,8 @@ exports.getProducts = (req, res, next) => {
   .catch(err => serverError(err, res));
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
+exports.deleteProduct = (req, res, next) => {
+  const prodId = req.params.productId;
   Product.findById(prodId) // Mongoose function for deleting product by id
     .then(product => {
       if(!product){
@@ -208,7 +208,7 @@ exports.postDeleteProduct = (req, res, next) => {
 
     })
     .then(result=>{
-      res.redirect('/admin/products');
+      res.status(200).json({message:"Product successfully deleted!"});
     })
-    .catch(err => serverError(err, res));
+    .catch(err => { res.status(200).json({message:"Product successfully deleted!"}); });
 };
