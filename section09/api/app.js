@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose'); //db connection
 const multer = require('multer'); // file upload download package for non-Windows computers
 const { v4: uuidv4 } = require('uuid'); // file upload download package for Windows computers
+const swaggerJsdoc = require('swagger-jsdoc'); // 
+const swaggerUI = require('swagger-ui-express'); //
 
 require('dotenv').config(); // import config values
 
@@ -81,6 +83,28 @@ app.use((req, res, next)=>{
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
+
+// Swagger Portion
+const options = {
+  definition: {
+      openapi: '3.0.0.',
+      info: {
+          title: 'The Social Media API',
+          version: '1.0.0'
+      },
+      servers: [
+          {
+              url: 'http://localhost:8080/' // The web url for the api
+          }
+      ]
+  },
+  apis: ['./routes/*.js'] // api routes shown in Swagger UI are all js files inside routes folder
+}
+
+const swaggerSpec = swaggerJsdoc(options);
+
+// the url route specified is where UI will be spelled out
+app.use('/', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose

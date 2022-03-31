@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user'); // get the model and in there, the user schema
 
-exports.signup = (req, res, next) => {
+exports.signup = async (req, res, next) => {
 
     const errors = validationResult(req); // fetch all errors caught by express-validator in router
 
@@ -20,27 +20,25 @@ exports.signup = (req, res, next) => {
 
     const email = req.body.email;
     const name = req.body.name;
-    const status = req.body.status;
     const password = req.body.password;
 
-    bcrypt.hash(password, 12)
-        .then(hashedPassword=>{
+    try{
 
-            const user = new User({
-                email:email, 
-                password:hashedPassword,
-                name:name
-            })
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const user = await new User({
+            email:email, 
+            password:hashedPassword,
+            name:name
+        });
         
-            return user.save();
-        })
-        .then(result=>{
+        const result = await user.save(); 
             res.status(201).json({
                     message:'User Created successfully!', 
                     userId:result._id
                 })
-        })
-        .catch(err=>{
+
+    }catch(err){
+
             if(!err.statusCode){ // give error a status code if it is not found 
 
                 err.statusCode = 500;
@@ -48,17 +46,18 @@ exports.signup = (req, res, next) => {
             } // cannot throw error inside a promise, therefore we send it to next middleware
     
             next(err); // go to next middleware with err as an argument passed to it.
-        })
+    }
 };
 
-exports.login = (req, res, next) => {
+exports.login = async (req, res, next) => {
 
     const email = req.body.email;
     const password = req.body.password;
     let loadedUser;
 
-    User.findOne({email: email})
-        .then(user=> {
+    try{
+
+        const user = await User.findOne({email: email})
 
             if(!user){ // give error a status code if it is not found 
 
@@ -71,9 +70,8 @@ exports.login = (req, res, next) => {
             } // cannot throw error inside a promise, therefore we send catch block
 
             loadedUser = user;
-            return bcrypt.compare(password, user.password); // check password is correct
-        })
-        .then(passwordCorrect=>{
+
+        const passwordCorrect = await bcrypt.compare(password, user.password); // check password is correct
 
             if(!passwordCorrect){// give error a status code if it is not correct 
 
@@ -99,25 +97,25 @@ exports.login = (req, res, next) => {
                 token:token,
                 userId: loadedUser._id.toString()
             });
-        })
-        .catch(err =>{
 
-            if(!err.statusCode){ // give error a status code if it is not found 
+    }catch(err){
 
-                err.statusCode = 500;
+        if(!err.statusCode){ // give error a status code if it is not found 
 
-            } // cannot throw error inside a promise, therefore we send it to next middleware
+            err.statusCode = 500;
 
-            next(err); // go to next middleware with err as an argument passed to it.
-        });
+        } // cannot throw error inside a promise, therefore we send it to next middleware
+
+        next(err); // go to next middleware with err as an argument passed to it.
+    }
 
 };
 
-exports.getUserStatus = (req, res, next) => {
+exports.getUserStatus = async (req, res, next) => {
 
-    User.findById(req.userId)
-        .then(user =>{
+    try{
 
+        const user = await User.findById(req.userId)
 
             if(!user){
 
@@ -133,26 +131,26 @@ exports.getUserStatus = (req, res, next) => {
             res.status(200).json({
                 status:user.status
             });
-        })
-        .catch(err =>{
 
-            if(!err.statusCode){ // give error a status code if it is not found 
+    }catch(err){
 
-                err.statusCode = 500;
+        if(!err.statusCode){ // give error a status code if it is not found 
 
-            } // cannot throw error inside a promise, therefore we send it to next middleware
+            err.statusCode = 500;
 
-            next(err); // go to next middleware with err as an argument passed to it.
-        });
+        } // cannot throw error inside a promise, therefore we send it to next middleware
+
+        next(err); // go to next middleware with err as an argument passed to it.
+    }
 };
 
-exports.updateUserStatus= (req, res, next) => {
+exports.updateUserStatus = async (req, res, next) => {
 
     const newStatus = req.body.status;
 
-    User.findById(req.userId)
-        .then(user =>{
+    try{
 
+        const user = await User.findById(req.userId)
 
             if(!user){
 
@@ -170,15 +168,15 @@ exports.updateUserStatus= (req, res, next) => {
             // This response(res.json()) returns a json format response to the request
             // This response(res.status(201).json()) includes status code to assist request understand outcome since they must decide what view to dispay
             res.status(200).json({ message:'Status update successful!' });
-        })
-        .catch(err =>{
 
-            if(!err.statusCode){ // give error a status code if it is not found 
+    }catch(err){
 
-                err.statusCode = 500;
+        if(!err.statusCode){ // give error a status code if it is not found 
 
-            } // cannot throw error inside a promise, therefore we send it to next middleware
+            err.statusCode = 500;
 
-            next(err); // go to next middleware with err as an argument passed to it.
-        });
+        } // cannot throw error inside a promise, therefore we send it to next middleware
+
+        next(err); // go to next middleware with err as an argument passed to it.
+    }
 };

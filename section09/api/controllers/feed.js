@@ -47,30 +47,31 @@ exports.getPosts = (req, res, next) => {
         })
 };
 
-exports.getPost = (req, res, next) => {
+exports.getPost = async (req, res, next) => {
 
     const postId = req.params.postId;
 
-    Post.findById(postId)
-    .then(post =>{
+    try{
 
-        console.log(post);
+        const post = await Post.findById(postId);
 
-        if(!post){
-            const error = new Error('Could not find post!');
+            console.log(post);
 
-            error.statusCode = 404;
+            if(!post){
+                const error = new Error('Could not find post!');
 
-            throw error; // will send us to catch block
-        }
+                error.statusCode = 404;
 
-        // This response(res.json()) returns a json format response to the request
-        // This response(res.status(200).json()) includes status code to assist request understand outcome since they must decide what view to dispay
-        res.status(200).json({
-            post: post
-        })
-    })
-    .catch(err =>{
+                throw error; // will send us to catch block
+            }
+
+            // This response(res.json()) returns a json format response to the request
+            // This response(res.status(200).json()) includes status code to assist request understand outcome since they must decide what view to dispay
+            res.status(200).json({
+                post: post
+            })
+
+    }catch(err){
 
         if(!err.statusCode){ // give error a status code if it is not found 
 
@@ -79,7 +80,7 @@ exports.getPost = (req, res, next) => {
         } // cannot throw error inside a promise, therefore we send it to next middleware
 
         next(err); // go to next middleware with err as an argument passed to it.
-    });
+    };
 
 };
 

@@ -9,6 +9,45 @@ const User = require('../models/user');
 
 const router = express.Router();
 
+/**
+* @swagger
+*  components:
+*      schemas:
+*          User:
+*              type: object
+*              properties:
+*                  email:
+*                      type: string
+*                  password:
+*                      type: string
+*                  name:
+*                      type: string
+*                  status:
+*                      type: string
+*                  posts:
+*                      type: array
+*/
+
+
+
+/**
+* @swagger
+* /signup:
+*  put:
+*      summary: creates a new user
+*      description: New users can signup for an account in order to have quotes in the system
+*      requestBody:
+*          required: true
+*          content:
+*              application/json:
+*                  schema:
+*                      $ref: '#components/schemas/User'
+*      responses:
+*          200:
+*              description: User Create Successfully
+*
+*/
+
 //PUT /auth/signup/
 router.put(
     '/signup/',    
@@ -37,6 +76,23 @@ router.put(
     ], 
     authController.signup
 );
+
+/**
+* @swagger
+* /auth:
+*  post:
+*      summary: User Login
+*      description: Existent users can log in and acquire a Token for the API use
+*      requestBody:
+*          required: true
+*          content:
+*              application/json:
+*                  schema:
+*                      $ref: '#components/schemas/User'
+*      responses:
+*          200:
+*              description: OK
+*/
 
 //POST /auth/login/
 router.post('/login', authController.login); // not validated becausse checks are done in the controller
