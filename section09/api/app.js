@@ -4,12 +4,40 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose'); //db connection
 const multer = require('multer'); // file upload download package for non-Windows computers
 const { v4: uuidv4 } = require('uuid'); // file upload download package for Windows computers
-const swaggerJsdoc = require('swagger-jsdoc'); // 
-const swaggerUI = require('swagger-ui-express'); //
+const swaggerJsdoc = require('swagger-jsdoc'); // Swagger docs
+const swaggerUI = require('swagger-ui-express'); // Swagger UI 
 
 require('dotenv').config(); // import config values
 
+// Swagger const options
+const options = {
+  definition: {
+      openapi: '3.0.0.',
+      info: {
+          title: 'The Social Media API',
+          version: '1.0.0',
+          description: 'A social Media App built with built with Node.JS and React.JS'
+      },
+      servers: [
+          {
+              url: 'http://localhost:8080/' // The web url for the api
+          }
+      ]
+  },
+  apis: ['./routes/*.js'] // api routes shown in Swagger UI are all js files inside routes folder
+}
+
+
+// Swagger docs creation
+const swaggerSpec = swaggerJsdoc(options);
+
+
+// define express app | express used to manage middlewares
 const app = express();
+
+// Swagger UI setup | the url route specified is where UI will be displayed
+app.use('/', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 
 // file upload middleware 
 const fileStorage = multer.diskStorage({
@@ -83,28 +111,6 @@ app.use((req, res, next)=>{
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
-
-// Swagger Portion
-const options = {
-  definition: {
-      openapi: '3.0.0.',
-      info: {
-          title: 'The Social Media API',
-          version: '1.0.0'
-      },
-      servers: [
-          {
-              url: 'http://localhost:8080/' // The web url for the api
-          }
-      ]
-  },
-  apis: ['./routes/*.js'] // api routes shown in Swagger UI are all js files inside routes folder
-}
-
-const swaggerSpec = swaggerJsdoc(options);
-
-// the url route specified is where UI will be spelled out
-app.use('/', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose

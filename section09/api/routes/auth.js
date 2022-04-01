@@ -9,30 +9,42 @@ const User = require('../models/user');
 
 const router = express.Router();
 
+// The definition of the User object, which we'll use to create, access, update, and delete the user.
+
 /**
 * @swagger
 *  components:
 *      schemas:
 *          User:
 *              type: object
+*              required: 
+*                  - email
+*                  - password
+*                  - name
 *              properties:
 *                  email:
 *                      type: string
+*                      description: The email that the user will use to log in
 *                  password:
 *                      type: string
+*                      description: The secret password that the user will use to log in
 *                  name:
 *                      type: string
+*                      description: The user's name which will appear when they are called in the app
 *                  status:
 *                      type: string
+*                      description: The initial status of the user
 *                  posts:
-*                      type: array
+*                      type: object
+*                      description: All the posts made by the user
 */
 
 
+// The definition of the signup route.
 
 /**
 * @swagger
-* /signup:
+* /auth/signup:
 *  put:
 *      summary: creates a new user
 *      description: New users can signup for an account in order to have quotes in the system
@@ -79,7 +91,7 @@ router.put(
 
 /**
 * @swagger
-* /auth:
+* /auth/login:
 *  post:
 *      summary: User Login
 *      description: Existent users can log in and acquire a Token for the API use
