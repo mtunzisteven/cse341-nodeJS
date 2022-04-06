@@ -118,8 +118,16 @@ mongoose
     MONGODB_URL
     ) //connected to shop db in firstcluster21 of db user mtunzi with specified password.
   .then(result => {
-    // start server at localhost:3000
-    app.listen(8080);
+    // start server at localhost:8080
+    const server = app.listen(8080); // app.listen(port) returns the http server we need to use to create socket
+
+    // create setup web socket io object
+    const io = require('socket.io')(server); // require('socket.io') returns a function, so we add server as arg
+
+    // create a connection everytime a client is connected
+    io.on('connection', socket =>{
+      console.log('client connected');
+    });
   })
   .catch(err => { 
     console.log(err); 
